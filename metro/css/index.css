@@ -1,0 +1,12 @@
+#main{
+	width: 1700px;
+	height: 1200px;
+	float: left;
+}
+
+#wordleControl{
+   float: left;
+   padding: 5px;
+   list-style-type:none;
+   line-height: 2em;
+}

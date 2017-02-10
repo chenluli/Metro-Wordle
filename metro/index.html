@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>SH Metro Map</title>
+	<link rel="stylesheet" type="text/css" href="css/index.css">
+</head>
+<body>
+	<div id="main"></div>
+	<div id="wordleControl">
+        <form >
+
+        <fieldset>
+        <legend>添加文字云</legend>
+		    <button type="button">Add</button> <br/>
+		    <div>选择站点
+			<select name="stations" id="stations"> 
+			</select>
+			</div>
+			<br/>
+
+			<div>word list
+				<button type="button">Random</button>
+				 / 自定义： <input type="textarea" name="list">
+			</div>
+			<br/>
+
+			<fieldset id="selectedS">
+	        <legend>已选站点</legend>
+		    </fieldset>
+			
+		</fieldset>
+        <button>Submit</button>
+		</form>
+	</div>
+
+	<script src="js/d3.min.js"></script>
+    <script src="js/d3-downloadable.js"></script>
+    <script src="js/wordcloud2.js"></script>
+    <script src="js/cloud.js"></script>
+	<script src="js/layout.js"></script>
+</body>
+</html>
