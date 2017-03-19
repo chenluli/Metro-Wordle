@@ -14,5 +14,5 @@ Metro+Wordle Visualization and Layout
 #### Word Cloud嵌入
    ![DEMO](metro/imgs/demo0119.png "DEMO")
 
-###使用
-###算法
+### 使用
+### 算法
