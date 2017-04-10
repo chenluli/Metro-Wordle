@@ -1,12 +1,56 @@
-#main{
-	width: 1700px;
-	height: 1200px;
-	float: left;
+body{
+	position: relative;
+	width:100%;
+	height:100%;
+	overflow: hidden;
+	/*尽量实现响应式*/
+    background-color: #eeeeee;
 }
 
-#wordleControl{
+#main{
+	width: 990px; /*可以使用变量吗？要和窗口大小一致。或在js里控制可以吗*/
+	height: 660px;
+	position: absolute;
+	left: 50%;
+	margin-left: -495px;
+	border: #47655b solid 1px ;
+	/*background-color: rgb(236,235,253);*/
+	background-color: white;
+}
+
+#vis{
+	position: fixed;
+}
+
+#legend{
+	height: 250px;
+	width: 50px;
+}
+#svgControl{
+
+}
+
+#controlPannel{
+	/*visibility: hidden;*/
    float: left;
    padding: 5px;
    list-style-type:none;
    line-height: 2em;
+	width: 200px;
+}
+
+#details{
+
+}
+
+.stations circle:hover{
+	cursor: pointer;
+}
+
+#main svg:active{
+	cursor: move;
+}
+
+.text text:hover{
+	cursor: pointer;
 }

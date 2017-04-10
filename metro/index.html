@@ -6,23 +6,30 @@
 	<link rel="stylesheet" type="text/css" href="css/index.css">
 </head>
 <body>
-	<div id="main"></div>
-	<div id="wordleControl">
-        <form >
+   <header></header>
+	<div id="main">
+		<div id="svgControl">
 
+		</div>
+
+		<svg id="vis"></svg>
+		<svg id="legend"></svg>
+	</div>
+
+	<div id="controlPannel">
+        <form action="js/layout.js" method="post">
         <fieldset>
         <legend>添加文字云</legend>
-		    <button type="button">Add</button> <br/>
+		    <button type="button">Add</button>
 		    <div>选择站点
 			<select name="stations" id="stations"> 
 			</select>
 			</div>
-			<br/>
 
-			<div>word list
-				<button type="button">Random</button>
-				 / 自定义： <input type="textarea" name="list">
-			</div>
+			<!--<div>word list-->
+				<!--<button type="button">Random</button>-->
+				 <!--/ 自定义： <input type="textarea" name="list">-->
+			<!--</div>-->
 			<br/>
 
 			<fieldset id="selectedS">
@@ -30,14 +37,27 @@
 		    </fieldset>
 			
 		</fieldset>
-        <button>Submit</button>
+        <!--<button>Submit</button>-->
+			<!--<fieldset>-->
+				<!--<legend>Search Pannel</legend>-->
+			<!--</fieldset>-->
+
+			<fieldset>
+				<legend>站点详情</legend>
+			</fieldset>
 		</form>
+
+		<button id="bubble">Bubble On</button>
 	</div>
 
+	<div id="details"></div>
+
 	<script src="js/d3.min.js"></script>
-    <script src="js/d3-downloadable.js"></script>
-    <script src="js/wordcloud2.js"></script>
-    <script src="js/cloud.js"></script>
-	<script src="js/layout.js"></script>
+
+    <!--<script src="js/d3-downloadable.js"></script> &lt;!&ndash;make svg downloadable &ndash;&gt;-->
+	<script src="js/bubblesets.js" charset="utf-8"></script>
+	<!--<script src="js/layout.js"></script>-->
+	<script src="js/constraintCloud.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
