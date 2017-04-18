@@ -144,9 +144,10 @@
         //初始化存储每个单词绘图信息的数组,todo 可由option更改 &字体和颜色换些好看的 &旋转功能还未加
         let words2DInfo=d3.range(wordList.length).map(function(d,i){
             let word,weight;
+
              if(typeof wordList[d] === "string"){
                  word=wordList[d];
-                 weight=(wordList.length-i)/10+0.2;
+                 weight=(wordList.length-i)/10+0.3;
              }
              else{
                  word=Object.keys(wordList[d])[0];
@@ -173,7 +174,7 @@
             }
         }
 
-
+        if(option.drawBoundary) boundary.draw(textGroup);
 
         //todo 是否需要变成类
         /**

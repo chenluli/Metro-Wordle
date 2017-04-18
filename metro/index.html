@@ -3,27 +3,43 @@
 <head>
 	<meta charset="UTF-8">
 	<title>SH Metro Map</title>
-	<link rel="stylesheet" type="text/css" href="css/index.css">
+
+    <link rel="stylesheet" type="text/css" href="css/buttons.css">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
 </head>
 <body>
-   <header></header>
+
+
+   <div   id="menu">
+	   <ul>
+		   <li>Origin</li>
+		   <li>No-Wordle</li>
+		   <li  class="selected">Metro-Wordle</li>
+	   </ul>
+   </div>
+
 	<div id="main">
 		<div id="svgControl">
 
 		</div>
 
+		<svg id="origin"></svg>
+		<svg id="no-wordle"></svg>
 		<svg id="vis"></svg>
 		<svg id="legend"></svg>
+
 	</div>
 
 	<div id="controlPannel">
-        <form action="js/layout.js" method="post">
+        <form  method="post"> <!--action="js/layout.js"-->
         <fieldset>
-        <legend>添加文字云</legend>
-		    <button type="button">Add</button>
-		    <div>选择站点
-			<select name="stations" id="stations"> 
-			</select>
+        <!--<legend>添加文字云</legend>-->
+
+		    <div>
+                <!--<button type="button">Add</button>-->
+
+
 			</div>
 
 			<!--<div>word list-->
@@ -35,28 +51,56 @@
 			<fieldset id="selectedS">
 	        <legend>已选站点</legend>
 		    </fieldset>
-			
+
 		</fieldset>
         <!--<button>Submit</button>-->
 			<!--<fieldset>-->
 				<!--<legend>Search Pannel</legend>-->
 			<!--</fieldset>-->
 
-			<fieldset>
-				<legend>站点详情</legend>
-			</fieldset>
+			<!--<fieldset>-->
+				<!--<legend>站点详情</legend>-->
+			<!--</fieldset>-->
+			<!--<fieldset>-->
+				<!--<legend></legend>-->
+			<!--</fieldset>-->
 		</form>
 
-		<button id="bubble">Bubble On</button>
+		<button class="button button-border button-rounded button-primary" id="bubble">Bubble On</button>
+
 	</div>
 
-	<div id="details"></div>
+	<div id="details">
+		<span>详情</span>
+		<i class="fa fa-close" aria-hidden="true"></i>
 
+	</div>
+
+   <div id="tooltip"></div>
+   <header>
+	   <span >Shanghai Metro</span>
+
+	   <span id="search">
+		   <i class="fa fa-search" aria-hidden="true"></i>
+		   <input type="text" name="search" placeholder="搜索地铁站">
+		   <!--<button class="button button-primary" >搜索站点<i class="fa fa-caret-down"></i></button>-->
+		   <ul class="button-dropdown-list" name="stations" id="stations"></ul>
+       </span>
+	   <div class="button-dropdown" data-buttons="dropdown" id="filter">
+		   <button class="button button-primary" >综合<i class="fa fa-caret-down"></i></button>
+		   <ul class="button-dropdown-list" name="selection" id="selection">
+			   <li>美食</li>
+			   <li>景点</li>
+			   <li>酒店</li>
+		   </ul>
+	   </div>
+
+   </header>
+
+    <script src="js/jquery-1.8.3.min.js"></script>
 	<script src="js/d3.min.js"></script>
-
     <!--<script src="js/d3-downloadable.js"></script> &lt;!&ndash;make svg downloadable &ndash;&gt;-->
 	<script src="js/bubblesets.js" charset="utf-8"></script>
-	<!--<script src="js/layout.js"></script>-->
 	<script src="js/constraintCloud.js"></script>
     <script src="js/main.js"></script>
 </body>
