@@ -565,7 +565,7 @@ let addLabels=function(sWithLabels,regions,option,svg){
 };
 
 function addAlabel(station,regions,origin,sWithLabel) {
-    let line=d3.select('#vis').append('line');
+    let line=d3.select('#vis .leaders').append('line');
     station['leader']={};
     station['leader']["xp"]=origin['x'];
     station['leader']["yp"]=origin['y'];
@@ -859,7 +859,7 @@ function addAWordle(station,regions,stations,sWithLabel) {
                                 // console.log(exist);
                                 for(let word of exist){
                                     let i=exist.indexOf(word);
-                                    console.log(word.station,i,exist[i]) //todo why?? 是否为i未实现let功能 或者其他异步操作改变了exist
+                                    // console.log(word.station,i,exist[i]) //todo why?? 是否为i未实现let功能 或者其他异步操作改变了exist
                                     if(word.station===station['name']){
                                         tmp.push(i);
                                     }
@@ -1075,7 +1075,7 @@ function getWordDict(station,query="美食$酒店$景点",radius=2000) {
 
     let locx=station.gpsy;
     let locy=station.gpsx;
-    let api="http://api.map.baidu.com/place/v2/search?output=json&scope=2&filter=sort_name:distance|sort_rule:1&ak=bRPsMMG6ZZl5Gj9Haivv0NefdClWgHk0&coord-type=1&query="
+    let api="https://api.map.baidu.com/place/v2/search?output=json&scope=2&filter=sort_name:distance|sort_rule:1&ak=bRPsMMG6ZZl5Gj9Haivv0NefdClWgHk0&coord-type=1&query="
         +encodeURIComponent(query)+"&location="+locx+","+locy+"&rasius="+radius;
     let words=[];
 
