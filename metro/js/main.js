@@ -171,17 +171,26 @@ function regionF(edges,origin,boundR){
 }
 originVis=d3.select("#origin");
 noWordleVis=d3.select("#no-wordle");
-d3.json("data/data.json",function (e,data) {
-    let paths=[],stations=[],dataP=data["paths"],dataS=data["stations"];
+embedVis=d3.select("#filling")
 
-    for(let x in dataP) {
-        paths.push(dataP[x]);
-    }
+d3.json("data/originpath.json",function (e,dataP){
+    d3.json("data/originsta.json",function (e,dataS) {
 
-    for(let x in dataS) {
-        stations.push(dataS[x]);
-    }
-    createMetroMap(originVis,paths,stations);
+        let paths=[],stations=[];
+
+        for(let x in dataP) {
+            dataP[x]["y1"]=1200-dataP[x]["y1"];
+            dataP[x]["y2"]=1200-dataP[x]["y2"];
+            paths.push(dataP[x]);
+        }
+
+        for(let x in dataS) {
+            dataS[x]["y"]=1200-dataS[x]["y"];
+            stations.push(dataS[x]);
+        }
+        
+        createMetroMap(originVis,paths,stations);
+    })
 });
 
 d3.json("data/allpath.json",function (e,dataP){
@@ -201,6 +210,7 @@ $("#menu li").click(function (e) {
         $(e.target).addClass("selected");
         vis.style("display","none");
         noWordleVis.style("display","none");
+        embedVis.style("display","none");
     }
     else if(e.target.innerHTML==="No-Wordle"){
         noWordleVis.style("display","block");
@@ -209,6 +219,18 @@ $("#menu li").click(function (e) {
         $(e.target).addClass("selected");
         vis.style("display","none");
         originVis.style("display","none");
+        embedVis.style("display","none");
+
+    }
+    else if(e.target.innerHTML==="Embedding"){
+        embedVis.style("display","block");
+
+        $("#menu li").removeClass("selected");
+        $(e.target).addClass("selected");
+        vis.style("display","none");
+        originVis.style("display","none");
+        noWordleVis.style("display","none");
+        
     }
     else{
         vis.style("display","block");
@@ -216,14 +238,16 @@ $("#menu li").click(function (e) {
         $(e.target).addClass("selected");
         noWordleVis.style("display","none");
         originVis.style("display","none");
+        embedVis.style("display","none");
+
     }
 });
 
 
 //生成Metro-Wordle
-d3.json("data/path.json",function (e,dataP){
-  d3.json("data/sta.json",function (e,dataS) {
-    d3.json("data/regions.json", function (e, regions) {
+d3.json("data/path2.json",function (e,dataP){
+  d3.json("data/sta2.json",function (e,dataS) {
+    d3.json("data/regions2.json", function (e, regions) {
         //createPannel(dataS);
         //1.处理好path，data，regions数据
         let [paths,stations,sWithLable]=processData(dataP,dataS,regions);
@@ -236,7 +260,7 @@ d3.json("data/path.json",function (e,dataP){
         let option={
             "font-family":"ariel",
             "drawSprite":false,
-            // "drawBoundary":true,
+            //"drawBoundary":true,
             minBoxSize:4,
             baseSize:48,
         };
@@ -583,7 +607,7 @@ function addAlabel(station,regions,origin,sWithLabel) {
     let option={
         "font-family":"ariel",
         "drawSprite":false,
-        // "drawBoundary":true,
+        //"drawBoufndary":true,
         minBoxSize:4,
         baseSize:60,
         boundary:boundGenerator(regionF(region['edges'],[origin.x,origin.y],400), 400, [origin.x,origin.y]),
@@ -699,7 +723,7 @@ function stationEventHandler(sWithLabel,regions,dataS) {
                     //切换已有worddle的显示状态即可 todo 不对?还是要判断nearby，应该是从缓存中取->或将其从sWithLable里移除（但这样效率会低一些）
                     let wordle = document.querySelectorAll("." + station['name']);
                     for (let elem of wordle) {
-                        if (elem.style.visibility === "hidden") {
+                        if (elem.style.visibility === "hidden") {//todo 将visibility改成display
                             elem.style.visibility = "visible";
                             // exist.push()//todo 还是应该把word2Dinfo存起来
                         }
@@ -1075,7 +1099,7 @@ function getWordDict(station,query="美食$酒店$景点",radius=2000) {
 
     let locx=station.gpsy;
     let locy=station.gpsx;
-    let api="https://api.map.baidu.com/place/v2/search?output=json&scope=2&filter=sort_name:distance|sort_rule:1&ak=bRPsMMG6ZZl5Gj9Haivv0NefdClWgHk0&coord-type=1&query="
+    let api="https://api.map.baidu.com/place/v2/search?output=json&page_size=10&page_num=0&scope=2&filter=sort_name:overall_rating|sort_rule:0&ak=bRPsMMG6ZZl5Gj9Haivv0NefdClWgHk0&coord-type=1&query="
         +encodeURIComponent(query)+"&location="+locx+","+locy+"&rasius="+radius;
     let words=[];
 

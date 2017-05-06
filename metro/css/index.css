@@ -163,8 +163,8 @@ li:hover{
 
 #menu li{
 	position: absolute;
-	left: -72px;
-   width: 200px;
+	left: -42px;
+   width: 150px;
 	text-align: center;
 	line-height: 3em;
 }
@@ -173,10 +173,14 @@ li:hover{
 	transform: rotate(90deg) translate(100px, 0px);
 }
 #menu li:nth-child(2){
-	transform: rotate(90deg) translate(300px, 0px);
+	transform: rotate(90deg) translate(250px, 0px);
 }
 #menu li:nth-child(3){
-	transform: rotate(90deg) translate(500px, 0px);
+	transform: rotate(90deg) translate(400px, 0px);
+
+}
+#menu li:nth-child(4){
+	transform: rotate(90deg) translate(550px, 0px);
 
 }
 #menu .selected{
@@ -186,7 +190,6 @@ li:hover{
 
 #origin{
 	display: none;
-	transform: rotate(-90deg) translate(200px,0px);
 	/*transform-origin: 40%;*/
 }
 #origin .stationName{
@@ -194,5 +197,9 @@ li:hover{
 }
 
 #no-wordle{
+	display: none;
+}
+
+#filling{
 	display: none;
 }
