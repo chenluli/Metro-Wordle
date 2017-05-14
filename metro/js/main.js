@@ -245,9 +245,9 @@ $("#menu li").click(function (e) {
 
 
 //生成Metro-Wordle
-d3.json("data/path2.json",function (e,dataP){
-  d3.json("data/sta2.json",function (e,dataS) {
-    d3.json("data/regions2.json", function (e, regions) {
+d3.json("data/path.json",function (e,dataP){
+  d3.json("data/sta.json",function (e,dataS) {
+    d3.json("data/regions.json", function (e, regions) {
         //createPannel(dataS);
         //1.处理好path，data，regions数据
         let [paths,stations,sWithLable]=processData(dataP,dataS,regions);
@@ -1190,3 +1190,6 @@ var PubSub = {
 // });
 //
 // PubSub.publish("wem");
+
+//todo 引入wordlefilling 第一次点击tab标签时开始渲染 渲染后设标识位，之后直接切换display的方式，不再重新渲染
+//todo 把联动响应也做成模块 不要再写一块儿了

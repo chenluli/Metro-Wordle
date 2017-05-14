@@ -155,7 +155,7 @@
              }
             let word2D=getWordInfo(word,weight,option.baseSize);
             word2D["position"]=[0,0];
-            word2D["color"]='#'+(Math.random()*0xffffff<<0).toString(16);
+            word2D["color"]='#3'+'369ce'[Math.floor(Math.random()*5)]+'69ce'[Math.floor(Math.random()*4)]//(Math.random()*0xffffff<<0).toString(16);
             word2D["fontStyle"]=option["font-family"];
             word2D["rotation"]=0;
             word2D['fit']=true;
@@ -361,6 +361,7 @@
                 .attr("y", word.height)
                 .style("font-size", word.fontSize+"px")
                 .style("font-family",word.fontStyle)
+                .style("font-weight","bold")
                 .attr("fill", word.color)
                 .attr('class',station)
                 .text(word.text);
@@ -399,7 +400,7 @@
             //document.querySelector("#main").appendChild(canvas)
             let ctx = canvas.getContext("2d",{ willReadFrequently: true });
             let ratio = Math.sqrt(canvas.getContext("2d").getImageData(0, 0, 1, 1).data.length >> 2);//1px??
-            ctx.font = ~~(fontSize / ratio) + "px "+word.fontStyle; //~~:取整
+            ctx.font = ~~(fontSize / ratio) + "px bolder "+word.fontStyle; //~~:取整
             let textW=Math.ceil(ctx.measureText(word).width);
             let textH = Math.ceil(Math.max(fontSize ,ctx.measureText('m').width,ctx.measureText('\uFF37').width));
             let boxH=Math.ceil(textH*1.5);

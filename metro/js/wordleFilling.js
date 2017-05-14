@@ -6,6 +6,10 @@
 
 (function (win) {
 
+   var defaultdic=[{"Hello":0.8},{"world":0.6}, "大木桥","9号线","words","wolf", "车站","嘉善路站", {"换乘站":0.2},"something","young","happiness","how","telling","jasondavies","sga","alice","rabbit","english",
+    "After","atime","she","heard","feet","inthe","distance","something","young","happiness","how","telling","haha",
+    "she","heard","feet","inthe","distance","something","young","happiness","how","telling","haha",]
+
     function Tree(x, y, r, b) {
         this.x = x;
         this.y = y;
@@ -86,7 +90,7 @@
                 .attr("cy", function(d) { return d[1]; })
                 .style("fill","blue");
 
-            g.append('circle').attr("cx",origin[0]).attr("cy",origin[1]).attr("r",5)
+            // g.append('circle').attr("cx",origin[0]).attr("cy",origin[1]).attr("r",5)
         }
 
         function getPointsAtRadius(radius) {
@@ -158,7 +162,8 @@
             let word2D=getWordInfo(word,weight,option.baseSize,option.rotate);
             return word2D;
         });
-
+        
+        var wsum=0;
         //尝试放入每个word，若不能放入则不显示
         for(let word2D of words2DInfo){
             let fitable=putAWord(word2D,boundary,exist);
@@ -166,7 +171,8 @@
             let changeRotate=0;
 
             //如果不能放入 则旋转 缩小 再尝试 【！！todo 旋转还未加入】
-            while(!fitable && word2D.weight>0.3){
+            if(!option.fast){
+                while(!fitable && word2D.weight>0.3){
                 if(!changeRotate){
                     word2D=getWordInfo(word2D.text,word2D.weight,option.baseSize,(word2D.rotation+=Math.PI/2)%Math.PI);
                    
@@ -174,16 +180,22 @@
                    changeRotate=1;
                 }
                 else{
-                   word2D=getWordInfo(word2D.text,word2D.weight-=0.2,option.baseSize,option.rotate);
+                   word2D=getWordInfo(word2D.text,word2D.weight-=0.15,option.baseSize,option.rotate);
                    // console.log(word2D)
                    fitable=putAWord(word2D,boundary,exist); 
                    changeRotate=0;
                 }
                 
+                }
             }
+            
             
             if(fitable){
                 exist.push(word2D);
+                console.log(word2D)
+                
+                wsum+=(word2D.weight*36*word2D.text.length)*(word2D.weight*36);
+                
                 drawOneWord(word2D,classname,option.drawSprite);
             }
             else{
@@ -192,6 +204,7 @@
         }
 
         if(option.drawBoundary) boundary.draw(textGroup);
+        console.log(wsum)
 
         //todo 是否需要变成类
         /**
@@ -376,7 +389,7 @@
                 .attr("x", word.position[0])
                 .attr("y", word.position[1]+word.height+word.trasY)
                 .attr("transform", "rotate(" + (-word.rotation*180/Math.PI) +","+word.position[0]+" "+(word.position[1]+word.trasY)+ ")") //textBox相对svg的位置
-                
+                .style("font-weight","bold")
                 .style("font-size", word.fontSize+"px")
                 .style("font-family",word.fontStyle)
                 .attr("fill", word.color)
@@ -411,7 +424,7 @@
          * @param baseSize
          * @returns {{text: *, fontSize: number, width: (*|number), height: (*|number), tree: *, treeArray: (*|*), leafArray: (*|*)}}
          */
-        function getWordInfo(word,weight=0.5,baseSize=50,rotateDeg=0){
+        function getWordInfo(word,weight=0.5,baseSize=36,rotateDeg=0){
             let fontSize=~~(baseSize*weight); //weight set to be 0.1~1.1
             let canvas = document.createElement("canvas");
             let width=  fontSize*10;
@@ -429,7 +442,7 @@
             let ctx = canvas.getContext("2d",{ willReadFrequently: true });
 
             let ratio = Math.sqrt(canvas.getContext("2d").getImageData(0, 0, 1, 1).data.length >> 2);//1px??
-            ctx.font = ~~(fontSize / ratio) + "px "+word.fontStyle; //~~:取整
+            ctx.font = ~~(fontSize / ratio) + "px bold "+word.fontStyle; //~~:取整
             let textW=Math.ceil(ctx.measureText(word).width);
             let textH = Math.ceil(Math.max(fontSize ,ctx.measureText('m').width,ctx.measureText('\uFF37').width));
       
@@ -476,7 +489,7 @@
                 treeArray: array[0],
                 leafArray: array[1],
                 position:[0,0],
-                color:'#'+(Math.random()*0xffffff<<0).toString(16),
+                color:weight>0.33?'#369':'#3'+'369ce'[Math.floor(Math.random()*5)]+'69ce'[Math.floor(Math.random()*4)],//'#'+(Math.random()*0xffffff<<0).toString(16),
                 fontStyle:option["font-family"],
                 rotation:rotateDeg,
                 fit:true,
@@ -657,7 +670,7 @@ function regionF(edges,origin,boundR){
 
 d3.json("data/path2.json",function (e,dataP){
   d3.json("data/sta2.json",function (e,dataS){
-     d3.json("data/regions.json",function(e,regions){
+     d3.json("data/regions2.json",function(e,regions){
 
         let svg=d3.select('svg');
 
@@ -776,7 +789,7 @@ var PADDING=0;
 function createMetroMap(svg,paths,stations) {
     createPath(paths,svg);
     createNode(stations,svg);
-    // textLabel(stations,svg);
+    textLabel(stations,svg);
     
 }
 
@@ -891,7 +904,7 @@ const linecolor=["#E4002B","#97D700","#FFD100","#5F259F","#AC4FC6","#D71671","#F
 originVis=d3.select("#origin");
 if(originVis[0][0]){
     d3.json("data/originpath.json",function (e,dataP){
-      d3.json("data/originsta.json",function (e,dataS) {
+      d3.json("data/originsta.json",function (e,dataS) { 
         // console.log(dataS)
         let paths=[],stations=[];
         let lines=[1,2,4,9];//先直接写，后续动态获取
@@ -924,20 +937,215 @@ if(originVis[0][0]){
 
         var results=[];
 
+         d3.json("data/poiJSON.json",function (e,poiJSON) {
+            console.log(poiJSON)
+            // for(let result of rlist){
+            //     result["rank"]=i*20+j;
+            //     results.push(result)
+            //     j++;
+            // }
+
+         })
+
+         function fillinPois(results){
+             results.sort(function(a,b){
+                    return a['rank']-b['rank'];
+                })
+
+                let pois=originVis.append('g').attr("class","pois");
+                let tooltip=$("#tooltip");
+
+            let gWIDTH=1500,gHEIGHT=1200,maxLon=121.9254676,minLon=121.0995216,maxLat=31.40999864,minLat=30.90948392;
+
+
+                // d3.json("data/path.json",function (e,dataP){
+                d3.json("data/sta2.json",function (e,dataS2){
+                     d3.json("data/regions2.json",function(e,regions){
+                        // console.log(regions)
+                        for(let regionid in regions){
+                            regions[regionid].innerS=[]
+                        }
+                       for(let res of results){
+                            // console.log(res["name"],res["rank"])
+                            let bdlon=res["location"]["lng"],bdlat=res["location"]["lat"];
+                            //百度经纬度坐标转国测局坐标
+                            let gcj02 = coordtransform.bd09togcj02(bdlon,bdlat);
+                            //国测局坐标转wgs84坐标
+                            let wgs84= coordtransform.gcj02towgs84(gcj02[0],gcj02[1]);
+                            // console.log(bdlon,bdlat);
+                            // console.log(wgs84,res["name"]);
+
+                            res['x']=(wgs84[0]-minLon)/(maxLon-minLon)*gWIDTH//+PADDING;
+                            res['y']=gHEIGHT-((wgs84[1]-minLat)/(maxLat-minLat)*gHEIGHT)//+PADDING;
+
+                            // if(res['name']==="闵行公园") console.log(res['name'],calcD(res,stations))
+                            // console.log(originVis)
+                            let circle=pois.append("circle")
+                               .attr("r","5")
+                               .attr("fill","red")
+                               .attr("cx",res['x'])
+                               .attr("cy",res['y'])
+                               .attr("opacity","0.5")
+                            circle.datum(res)
+                            // pois.append("text")
+                            //    // .attr("r","5")
+                            //    // .attr("fill","red")
+                            //    .attr("x",res['x'])
+                            //    .attr("y",res['y'])
+                            //    .attr('font-size',12)
+                            //    .attr('fill',"black")
+                            //    .text(res["name"])
+
+                            judgeRegion(res,stations,regions,dataS)
+
+                        }
+                        var option={
+                            "font-family":"ariel",
+                            "drawSprite":false,
+                            "drawBoundary":false,
+                            minBoxSize:4,
+                            rotate:0,
+                            fast:true,
+                        }
+
+                        let boundaryR = 400;
+                        var textG=d3.select('svg').append("g").attr("class","text");
+                        for(let regionid in regions){
+
+                            // console.log(regionid)
+                            // if(regionid !=1) continue;//用来debug，查看单个region
+
+                            let region=regions[regionid];
+                            let edges=region['edges']
+
+                            var regionSpace=0;
+                            for(let edge of edges){
+                                console.log(edge.start,edge.to)
+                                regionSpace+=(edge.x1*(-edge.y2)-edge.x2*(-edge.y1))//由于y坐标系反了
+                            }
+
+                            
+
+                            let count=0;
+                            region["cx"]=0
+                            region["cy"]=0;
+                            for(let s of region['allS']){
+                                if(!dataS2[s]) continue;
+                                region.cx+=dataS2[s].x;
+                                region.cy+=dataS2[s].y;
+                                count+=1;
+                            }
+                            // for(let edge of edges){
+        
+                            //     region.cx+=edge.x1;
+                            //     region.cy+=edge.y1;
+                            //     count+=1;
+                            // }
+                            region.cx/=count;   
+                            region.cy/=count;  
+
+                            let origin=[region.cx,region.cy]
+
+                            //todo !!要用isinregion检查是否真的在内部，不在的话，x和y每次+或-5来尝试，直到找到一个内部的点
+                            let originx0=origin[0],originy0=origin[1],flag1=-1,flag2=0,origin0=[originx0,originy0];
+                            let k=1;
+                            while(!isinRegion(origin,region) && k<=20){
+                                // if(region.stations.length<5) continue;
+                                console.log(origin,k)
+                                origin[flag2]=origin0[flag2]+45*flag1*k;
+                                if(flag2==1) flag1*=-1;
+                                flag2=(flag2+1)%2;
+                                if(flag1===1 && flag2===1) k+=1;
+                            }
+
+                            // if(region.stations.length<5) origin=[385,800];
+                        
+                            let pois=region['innerS']
+                            option['boundary'] = boundGenerator(regionF(edges, origin, boundaryR), boundaryR, origin); //todo exist应该是每个region的属性/全局变量
+                            option['boundary'] .draw(textG);
+                            
+                            wordList=[]
+                            let tags={};
+                            for(let poi of pois){
+                                wordList.push(poi.name)
+                                let tagArray=poi.detail_info.tag.split(";")
+                                for(let tag of tagArray){
+                                    if(tag in tags){
+                                        tags[tag]+=1;
+                                    }
+                                    else{
+                                        tags[tag]=0;
+                                        wordList.unshift(tag);
+                                    }
+                                }
+                                
+                            }
+
+                            region['words']=wordList;
+
+                            // var wsum=0;
+                            
+
+                            
+                            console.log("space:",regionSpace/2);
+
+                            wordle(wordList,option,textG,regionid);
+                            // console.log(wordList);
+                            break;
+                        }
+                        
+                        console.log(regions)
+                        eventHandler(regions)
+
+                     })
+                    })
+                // })
+
+                
+                pois[0][0].addEventListener("mouseover", function (e) {
+                    console.log("enter")
+                    if (e.target && e.target.nodeName == "circle") {
+                        d3.select(e.target).attr('r', '8');
+
+                        tooltip.css("visibility", 'visible');
+                        tooltip.html(e.target.__data__.name);
+                        tooltip.css("left", (e.clientX + 15) + 'px');
+                        tooltip.css("top", (e.clientY + 15) + 'px');
+
+                    }
+                });
+                pois[0][0].addEventListener("mouseout", function (e) {
+                    if (e.target && e.target.nodeName == "circle") {
+                        d3.select(e.target).attr('r', '6');
+                        tooltip.css("visibility", 'hidden');
+                    }
+                });
+         }
+
+         function success(response,i){
+            var rlist=response["results"];
+            let j=1;
+            for(let result of rlist){
+                result["rank"]=i*20+j;
+                results.push(result)
+                j++;
+            }
+
+            //已全部获取
+            let gWIDTH=1500,gHEIGHT=1200,maxLon=121.9254676,minLon=121.0995216,maxLat=31.40999864,minLat=30.90948392;
+            if(results.length===response["total"]){
+                console.log("complete",results.length);
+                fillinPois(results);
+            }
+        }
+
         for(let i=0;i<20;i++){
           
-           var defaultdic=[
-                {"Hello":0.8},
-                {"world":0.6}, "大木桥","9号线",
-                "words","wolf", "车站","嘉善路站",
-                {"换乘站":0.2},"something","young","happiness","how","telling","jasondavies","sga","alice","rabbit","english",
-                "After","atime","she","heard","feet","inthe","distance","something","young","happiness","how","telling","haha",
-                "she","heard","feet","inthe","distance","something","young","happiness","how","telling","haha",]
-
             var api="https://api.map.baidu.com/place/v2/search?output=json&page_size=20&scope=2&filter=sort_name:default|sort_rule:0&coord-type=1&ak="+token
                      +"&query="+encodeURIComponent(query)+"&page_num="+i+"&region="+region;
                      //"&location="+locx+","+locy+"&rasius="+radius;
 
+            //之后自己先爬取并建立一个数据库，从本地文件中获取
             $.ajax({
                 type: "GET",
                 dataType: 'jsonp',
@@ -948,170 +1156,13 @@ if(originVis[0][0]){
                 },
             })
                 .done(function(data) {
-                    success(data);
+                    success(data,i);
                 })
                 .fail( function(xhr, textStatus, errorThrown) {
                     console.log(xhr.responseText);
                     console.log(textStatus);
                     words=defaultdic;
-                });
-
-                function success(response){
-                    var rlist=response["results"];
-                    let j=1;
-                    for(let result of rlist){
-                        result["rank"]=i*20+j;
-                        results.push(result)
-                        j++;
-                    }
-
-                    //已全部获取
-                    let gWIDTH=1500,gHEIGHT=1200,maxLon=121.9254676,minLon=121.0995216,maxLat=31.40999864,minLat=30.90948392;
-                    if(results.length===response["total"]){
-                        console.log("complete",results.length);
-                        results.sort(function(a,b){
-                            return a['rank']-b['rank'];
-                        })
-
-                        let pois=originVis.append('g').attr("class","pois");
-                        let tooltip=$("#tooltip");
-
-                        // d3.json("data/path.json",function (e,dataP){
-                        d3.json("data/sta.json",function (e,dataS2){
-                             d3.json("data/regions2.json",function(e,regions){
-                                // console.log(regions)
-                                for(let regionid in regions){
-                                    regions[regionid].innerS=[]
-                                }
-                               for(let res of results){
-                                    // console.log(res["name"],res["rank"])
-                                    let bdlon=res["location"]["lng"],bdlat=res["location"]["lat"];
-                                    //百度经纬度坐标转国测局坐标
-                                    let gcj02 = coordtransform.bd09togcj02(bdlon,bdlat);
-                                    //国测局坐标转wgs84坐标
-                                    let wgs84= coordtransform.gcj02towgs84(gcj02[0],gcj02[1]);
-                                    // console.log(bdlon,bdlat);
-                                    // console.log(wgs84,res["name"]);
-
-                                    res['x']=(wgs84[0]-minLon)/(maxLon-minLon)*gWIDTH//+PADDING;
-                                    res['y']=gHEIGHT-((wgs84[1]-minLat)/(maxLat-minLat)*gHEIGHT)//+PADDING;
-
-                                    // if(res['name']==="闵行公园") console.log(res['name'],calcD(res,stations))
-                                    // console.log(originVis)
-                                    let circle=pois.append("circle")
-                                       .attr("r","5")
-                                       .attr("fill","red")
-                                       .attr("cx",res['x'])
-                                       .attr("cy",res['y'])
-                                       .attr("opacity","0.5")
-                                    circle.datum(res)
-                                    // pois.append("text")
-                                    //    // .attr("r","5")
-                                    //    // .attr("fill","red")
-                                    //    .attr("x",res['x'])
-                                    //    .attr("y",res['y'])
-                                    //    .attr('font-size',12)
-                                    //    .attr('fill',"black")
-                                    //    .text(res["name"])
-
-                                    judgeRegion(res,stations,regions,dataS)
-
-                                }
-                                var option={
-                                    "font-family":"ariel",
-                                    "drawSprite":false,
-                                    "drawBoundary":true,
-                                    minBoxSize:4,
-                                    rotate:0,
-                                }
-
-                                let boundaryR = 400;
-                                var textG=d3.select('svg').append("g").attr("class","text");
-                                for(let regionid in regions){
-
-                                    // console.log(regionid)
-                                    // if(regionid !=1) continue;//用来debug，查看单个region
-
-                                    let region=regions[regionid];
-                                    let edges=region['edges']
-
-                                    let count=0;
-                                    region["cx"]=0
-                                    region["cy"]=0;
-                                    for(let s of region['allS']){
-                                        if(!dataS2[s]) continue;
-                                        region.cx+=dataS2[s].x;
-                                        region.cy+=dataS2[s].y;
-                                        count+=1;
-                                    }
-                                    // for(let edge of edges){
-                
-                                    //     region.cx+=edge.x1;
-                                    //     region.cy+=edge.y1;
-                                    //     count+=1;
-                                    // }
-                                    region.cx/=count;   
-                                    region.cy/=count;  
-
-                                    let origin=[region.cx,region.cy]
-
-                                    //todo !!要用isinregion检查是否真的在内部，不在的话，x和y每次+或-5来尝试，直到找到一个内部的点
-                                    let origin0=origin,flag1=-1,flag2=0;
-                                    let k=1;
-                                    while(!isinRegion(origin,region) && k<=15){
-                                        console.log(origin,k)
-                                        origin[flag2]=origin0[flag2]+45*flag1*k;
-                                        if(flag2==1) flag1*=-1;
-                                        flag2=(flag2+1)%2;
-                                        if(flag1===1 && flag2===1) k+=1;
-                                    }
-
-                                    if(region.stations.length<5) origin=[385,800];
-
-                                    let pois=region['innerS']
-                                    option['boundary'] = boundGenerator(regionF(edges, origin, boundaryR), boundaryR, origin); //todo exist应该是每个region的属性/全局变量
-                                    // option['boundary'] .draw(textG);
-
-                                    wordList=[]
-                                    for(let poi of pois){
-                                        wordList.push(poi.name)
-                                    }
-
-                                    wordle(wordList,option,textG,regionid);
-                                    console.log("one");
-                                    // break;
-                                }
-                                
-                                console.log(regions)
-                             })
-                            })
-                        // })
-
-                        
-                        pois[0][0].addEventListener("mouseover", function (e) {
-                            console.log("enter")
-                            if (e.target && e.target.nodeName == "circle") {
-                                d3.select(e.target).attr('r', '8');
-
-                                tooltip.css("visibility", 'visible');
-                                tooltip.html(e.target.__data__.name);
-                                tooltip.css("left", (e.clientX + 15) + 'px');
-                                tooltip.css("top", (e.clientY + 15) + 'px');
-
-                            }
-                        });
-                        pois[0][0].addEventListener("mouseout", function (e) {
-                            if (e.target && e.target.nodeName == "circle") {
-                                d3.select(e.target).attr('r', '6');
-                                tooltip.css("visibility", 'hidden');
-                            }
-                        });
-                         
-                       
-            
-                    }
-
-                }
+                });         
         }
 
       })
@@ -1264,7 +1315,7 @@ function rayCasting(p, region,dataS) {
           tx = s2.x,
           ty = s2.y;
 
-        if(p.name==="上海动物园" &&((s1.name==="虹桥路")||(s2.name==="虹桥路"))) console.log(px,py,s1,s2,sx,sy,tx,ty)
+        // if(p.name==="上海动物园" &&((s1.name==="虹桥路")||(s2.name==="虹桥路"))) console.log(px,py,s1,s2,sx,sy,tx,ty)
 
 
       // 点与多边形顶点重合
@@ -1316,4 +1367,104 @@ function rayCasting(p, region,dataS) {
     // 射线穿过多边形边界的次数为奇数时点在多边形内
     // console.log(p.name,flag1,flag2,flag3,flag4,region.allS)
     return flag1+flag2+flag3+flag4
+}
+
+function enlarge(origin,region,regionid){
+ //todo 之后变成region的一个方法 region.enlarge
+    let boundaryR=400;
+    console.log(region)
+    var option={
+            "font-family":"ariel",
+            "drawSprite":false,
+            "drawBoundary":true,
+            minBoxSize:4,
+            rotate:0,
+            fast:true,
+        }
+    
+    let edges=region['edges'];
+    // let origin=[region.cx,region.cy];
+    
+    let box=d3.select('#box').select('#region'+regionid);
+    if(!box[0][0]){
+        box=d3.select('#box').append('svg').attr('id',"region"+regionid).attr('class','regionarea');//放置放大后的
+    
+        box.attr('width',5*boundaryR)
+           .attr('height',5*boundaryR)
+
+        option['boundary']=boundGenerator(regionF(edges, origin, boundaryR), 2*boundaryR, origin);
+        option['boundary'].draw(box);
+        box[0][0].style.display='block';
+
+        //在新的画布上放词（todo 若建立空间索引后，可以再为region添加exist属性，并放大后不用重新计算已经布局过的词的位置）
+        wordle(region['words'],option,box,"tmp")
+    }
+    else{
+        box[0][0].style.display='block';
+    }
+    
+
+    
+
+}
+
+//todo 使用一个放大镜图标 当选用这个图标后，点击区域会放大
+// if(){
+
+// }
+var wordleSVG=document.querySelector('#wordleEmbed');//todo 之后代码结构 SinglePageA 使用map，一次性选好所有要用的
+
+function eventHandler(regions){
+    
+    wordleSVG.addEventListener('click',function(e){
+        //find the region that the user click
+        let mouseX=e.clientX;
+        let mouseY=e.clientY;
+       
+            let targetRegion;
+            let targetRegionid;
+
+            // d3.select('#box').attr('left',mouseX).attr('top',mouseY).attr("display","block");
+            let box=document.querySelector('#box');
+            box.style.display='block';
+            
+            for(let regionid in regions){
+                let region=regions[regionid];
+
+                if(isinRegion([mouseX,mouseY],region)){
+                    targetRegionid=regionid;
+                    targetRegion=region;
+                    break;
+                }
+            }
+
+            enlarge([mouseX,mouseY],targetRegion,targetRegionid);
+            wordleSVG.style.opacity=0.3;
+        
+        
+   })
+
+    // wordleSVG.addEventListener('mouseout',function(e){
+
+    //      $('#box').html(" ");//将之前画的清空
+    //      d3.select('#box').attr('display','none');
+
+    //      wordleSVG.style.opacity=1;
+    // })
+
+    document.querySelector("body").addEventListener('click',function(e){
+        let mouseX=e.clientX;
+        let mouseY=e.clientY;
+        console.log(mouseX,mouseY)
+        if(mouseX>1500 || mouseY>1200){
+            // $('#box').html(" ");//将之前画的清空
+            d3.select('#box').attr('display','none');
+            for(let elem of d3.selectAll('.regionarea')[0]){
+                // console.log(elem)
+                elem.style.display='none'
+            }
+
+           wordleSVG.style.opacity=1;
+        }
+    })
 }

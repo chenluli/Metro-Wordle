@@ -1,6 +1,4 @@
 //MetroMap
-
-
 const HEIGHT=1100;
 const WIDTH=1650;//为初始大小 后续会由document.documentElement.clientWidth+viewBox调整;
 const PADDING=20;
