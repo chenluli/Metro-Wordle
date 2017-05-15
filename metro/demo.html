@@ -6,7 +6,7 @@
     <title>SH-Metro Demo</title> 
     <link rel="stylesheet" type="text/css" href="css/buttons.css">
     <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link rel="stylesheet" type="text/css" href="css/demo.css">
 </head>
 <style>
 /*
@@ -20,18 +20,28 @@
      </ul>
   </div>
 
-  <div id="sideBar">
-    <div id="categry"></div>
-    <div id="regionIc"></div>
 
+  <div id="main">
+    <div id="svgControl"></div>
+
+    <svg id="origin"></svg>
+    <svg id="wordle"></svg>
+    <!-- <div id="mainVis"></div> -->
+  
+    <svg id="legend"></svg>
+  </div>
+   <div id="sideBar">
+    
+    <!-- <div id="regionIc"><span>区域</span></div> -->
+    <div id="categry"><span>分类</span></div>
     <div id="charts">
-      <div id="hour-chart" class="chart">
+      <div id="spend-chart" class="chart">
         <div class="title">人均消费(Spend)</div>
       </div>
-      <div id="delay-chart" class="chart">
+      <div id="heat-chart" class="chart">
         <div class="title">热度(Comment_Num)</div>
       </div>
-      <div id="distance-chart" class="chart">
+      <div id="score1-chart" class="chart">
         <div class="title">均分(Average_Score)</div>
       </div>
       <div id="taste" class="chart">
@@ -45,19 +55,11 @@
       </div>
     </div>
     <aside id="totals"><span id="active">-</span> of <span id="total">-</span> elems selected.</aside>
-    
+    <div id="details">
+      <span>详情</span>
+      <i class="fa fa-close" aria-hidden="true"></i>
+    </div>
   </div>
-
-  <div id="main">
-    <div id="svgControl"></div>
-
-    <svg id="origin"></svg>
-    <svg id="wordle"></svg>
-    <!-- <div id="mainVis"></div> -->
-  
-    <svg id="legend"></svg>
-  </div>
-
    <div id="tooltip"></div>
 
 
@@ -70,7 +72,7 @@
        <!--<button class="button button-primary" >搜索站点<i class="fa fa-caret-down"></i></button>-->
        <ul class="button-dropdown-list" name="stations" id="stations"></ul>
        </span>
-     <div class="button-dropdown" data-buttons="dropdown" id="filter">
+     <div class="button-dropdown" data-buttons="dropdown" id="query">
        <button class="button button-primary" >综合<i class="fa fa-caret-down"></i></button>
        <ul class="button-dropdown-list" name="selection" id="selection">
          <li>美食</li>
@@ -81,10 +83,6 @@
    </header>
 
    <footer>
-     <div id="details">
-      <span>详情</span>
-      <i class="fa fa-close" aria-hidden="true"></i>
-    </div>
    </footer>
 
 
@@ -93,10 +91,11 @@
 <script src="js/jquery-1.8.3.min.js"></script>
 <script src="js/transformcoord.js"></script> 
 <script src="js/d3.min.js"></script>
+<script src="js/pubsub.js"></script>
 
 <script src="js/constraintCloud.js"></script>
-<script src="js/mainVis.js"></script>
 <script src="js/dataModel.js"></script>
+<script src="js/mainVis.js"></script> 
 <script src="js/filter.js"></script>
 <script src="js/shell.js"></script>
 </body>

@@ -138,20 +138,24 @@
     };
 
     //加上多个origin的情况
-    win.wordle=function(wordList,option,textGroup,classname,exist=[]){ //exist参数是为了适应于画布上已有word的情况
+    win.wordle=function(wordList,option,textGroup,classname="word",exist=[]){ //exist参数是为了适应于画布上已有word的情况
         let boundary=option.boundary;
+        console.log(wordList.length)
 
         //初始化存储每个单词绘图信息的数组,todo 可由option更改 &字体和颜色换些好看的 &旋转功能还未加
         let words2DInfo=d3.range(wordList.length).map(function(d,i){
             let word,weight;
-
+            
+            
              if(typeof wordList[d] === "string"){
                  word=wordList[d];
                  weight=(wordList.length-i)/10+0.3;
              }
              else{
-                 word=Object.keys(wordList[d])[0];
-                 weight=wordList[d][word];
+                 word=wordList[d].word;
+                 weight=wordList[d].weight;
+                 // console.log(word,weight,wordList[d]);
+                 // if(word||weight) continue;
              }
             let word2D=getWordInfo(word,weight,option.baseSize);
             word2D["position"]=[0,0];
@@ -159,7 +163,8 @@
             word2D["fontStyle"]=option["font-family"];
             word2D["rotation"]=0;
             word2D['fit']=true;
-            word2D["station"]=classname;
+            word2D['classname']=classname
+            word2D["data"]=wordList[d];
             return word2D;
         });
 
@@ -316,7 +321,7 @@
                     let rectoy=-((rect.y+rect.b)/2+word.position[1])+boundary.origin[1];
                     let theta=(Math.atan(rectoy/rectox)+(rectox<0?1:2)*Math.PI)%(Math.PI*2); //Math.atan的范围-pi/2,pi/2
                     let rBound=boundary.func(theta).map(function (r) {
-                        return r*boundary.maxR;
+                        return r*boundary.maxR-3;//留3px的间隙
                     })
                     // console.log(rBound)
                     rBound=rBound.sort(function (a,b) {
@@ -355,6 +360,7 @@
 
         function drawOneWord(word,station,sprite=false) {
             let theText = textGroup.append("text");
+            
             theText.attr("pointer-events", "all")
                 .attr("transform", "translate(" + word.position + ")") //textBox相对svg的位置
                 .attr("x", 0)
@@ -363,7 +369,8 @@
                 .style("font-family",word.fontStyle)
                 .style("font-weight","bold")
                 .attr("fill", word.color)
-                .attr('class',station)
+                .attr('class',word.classname)
+                .datum(word.data)
                 .text(word.text);
 
             word['box']=theText[0][0].getBBox();
@@ -409,10 +416,17 @@
 
             //Get pixels of text
             function sprite(w, h) {
-                let pixels = ctx.getImageData(0, 0, w / ratio, h / ratio).data,
+                try{
+                    let pixels = ctx.getImageData(0, 0, w / ratio, h / ratio).data,
                     sprite = [];
-                for (let i = w * h; --i >= 0;) sprite[i] = pixels[(i << 2) + 3];
-                return sprite;
+                    for (let i = w * h; --i >= 0;) sprite[i] = pixels[(i << 2) + 3];
+                    return sprite;
+                }
+                catch(e){
+                    console.log(e);
+
+                }
+                
             }
 
             function makeTextTree() {

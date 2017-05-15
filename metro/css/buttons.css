@@ -634,7 +634,8 @@
 .button-border.button-tiny, .button-tiny.button-border-thin, .button-tiny.button-border-thick,
 .button-border-thin.button-tiny,
 .button-border-thick.button-tiny {
-    line-height: 20px; }
+    line-height: 10px;
+    }
 
 /*
 * Border Buttons
@@ -1487,7 +1488,8 @@
     padding: 0 30px; }
 
 .button-tiny {
-    font-size: 9.6px;
+    font-size: 6px;
     height: 24px;
     line-height: 24px;
-    padding: 0 24px; }
+    padding: 0 24px;
+    }

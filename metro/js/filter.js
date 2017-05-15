@@ -1,25 +1,40 @@
 
 //todo 之后变成动态渲染，前端用模板填充数据，生成页面
-
+var charWidth=150;
+var chartHeight=50;
 //regions 
 //点击 事件触发
-function drawRegionIcon(){
-
+function drawRegionIcon(regions){
+	var iconSvg=d3.select("#regionIc").append("svg").attr("width",1300).attr("height",1300)
+	var posx=10,posy=10;
+	for(let regionid in regions){
+		let region=regions[regionid];
+		let boundR=Math.floor(Math.sqrt(region.space/1600));
+		if(boundR<25) boundR=25;
+		var boundary= boundGenerator(regionF(region.edges, [region.cx,region.cy], 400), boundR, [posx,posy]); //todo boundaryG改成返回一个和R有关的函数
+	    posx+=2*boundR;
+	    if(posx>=280) {
+	    	posx=10;
+	    	posy+=50;
+	    }
+	    boundary.draw(iconSvg.append("g").attr("class","regIc"+regionid));
+	}
 }
-
 
 //categories
 //事件：点击是高亮 点叉是删除分类，重新布局
- // <button class="button button-pill button-primary">火锅</button> 
- // <button class="button button-small button-plain button-border button-circle"><i class="fa fa-trash-o"></i></button>
- var $ctgContainer=$("#categry"); //todo 之后用一个对象缓存所有选择器
- function ctgryInit(ctgries){
+// <button class="button button-pill button-primary">火锅</button> 
+// <button class="button button-small button-plain button-border button-circle"><i class="fa fa-trash-o"></i></button>
+var $ctgContainer=$("#categry"); //todo 之后用一个对象缓存所有选择器
+function ctgryInit(ctgries){
 
  	ctgries.forEach(function(elem){
  		renderButton(elem.key)
  	})
+    
+    $ctgContainer.append("\<span class=\"button button-rounded ctg\"\>reset\</span\>")
 
-  
+
  	function renderButton(key){
  		var btnHtml="\<span class=\"button button-small button-rounded button-primary ctg\"\>"
  		+key
@@ -29,70 +44,54 @@ function drawRegionIcon(){
 
  		$ctgContainer.append(btnHtml);
  	}
- }
+}
 
-$ctgContainer.click(function(e){
-	//如果点击的是span，则高亮选中类别
-	//e.which 
+	
+var createFilter=function(data){
+    //模块变量： 数据范围，数据属性
+    poisArray=data.poisArray;
+    var nestByCtgrz = d3.nest().key(function(d) { return d.shop_categories; }).entries(poisArray);
+    var nestByCtgrzF=nestByCtgrz.filter(function(d){return d.values.length>200});
 
-	//如果删去 则改变数据 且更新整个地铁图
-
-})
-
-
-//该数据后续应有另一个模块的api提供
-var maxLon=121.9254676,minLon=121.0995216,maxLat=31.40999864,minLat=30.90948392;
-                       
-//data filter jquery-ui-slider
-//事件触发
-//模块变量： 数据范围，数据属性
-d3.csv("data/task_data1.csv", function(error, poisArray) {
-  //数据处理
-  
-  poisArray.forEach(function(d, i) {
-  	d.shop_categories=JSON.parse(d.shop_categories)[2];
-  	d.shop_scores=JSON.parse(d.shop_scores);
-  	d.tags=JSON.parse(d.tags);
-  	d.shop_comment_num=parseInt(d.shop_comment_num);
-  	d.shop_spend=parseInt(d.shop_spend);
-  	//国测局坐标转wgs84坐标
-    [d.longitude,d.latitude]= coordtransform.gcj02towgs84(parseFloat(d.longitude),parseFloat(d.latitude));
-
-    d.x=(d.longitude-minLon)/(maxLon-minLon)*gWIDTH//+PADDING;
-    d.y=gHEIGHT-((d.latitude-minLat)/(maxLat-minLat)*gHEIGHT)//+PADDING;
+    var nestByRegion=d3.nest().key(function(d) { return d.regionid; }).entries(poisArray);
+    ctgryInit(nestByCtgrzF);
     
-    let mean=0;
-  	d.shop_scores.forEach(function(elem){
-  		elem.score=parseFloat(elem.score);
-  		mean+=elem.score/3;
-  	})
-  	d.shop_scores.push({
-  		"score": parseFloat(mean.toFixed(1)),
-  		"score_title":"mean"
-  	})
+    $ctgContainer.click(function(e){
+		//如果点击的是span，则高亮选中类别
+		
+		if(e.target.nodeName==="SPAN"){
+			var $selectCtg=$(e.target);
+			var key=$selectCtg.text().trim();
+
+			if(key==="reset"){
+				$("#categry span").removeClass("selected");
+                filterInit(poisArray);
+			}
+			else{
+				$("#categry span").removeClass("selected");
+		        $selectCtg.addClass("selected");
+           
+		        ctgClick.publish(_.where(nestByCtgrzF,{"key":key})[0]);
+			}
+		   
+		}
+		
+       
+		//如果删去 则改变数据 且更新整个地铁图
+	})
+                       
+
+    filterInit(poisArray);
+    // drawRegionIcon(data.regions)
+
+}
 
 
+function filterInit(poisArray){
 
-  });
-
-  poisArray=poisArray.filter(function(d){return d.shop_scores.length===4});
-
-  // A nest operator, for grouping the list. 
-  var nestByCtgrz = d3.nest().key(function(d) { return d.shop_categories; }).entries(poisArray);
-  var nestByCtgrzF=nestByCtgrz.filter(function(d){return d.values.length>20})
-
-  var nestByRegion=d3.nest().key(function(d) { return d.regionid; }).entries(poisArray);
-
-  console.log(poisArray[10])
-
-  //触发数据加载完成事件
-  // judgeRegion(res,stations,regions,dataS)
-
-  //
-  ctgryInit(nestByCtgrzF);
-
-//---------------
   // Create the crossfilter for the relevant dimensions and groups.
+  var pois,all,spend,spends,heat,heats,scoreAvg,scoreAvgs,scoreTaste,scoreTastes,scoreEnv,scoreEnvs,scoreServ,scoreServs;
+
   var pois = crossfilter(poisArray),
       all = pois.groupAll(),
 
@@ -101,7 +100,7 @@ d3.csv("data/task_data1.csv", function(error, poisArray) {
 
       heat = pois.dimension(function(d) { return d.shop_comment_num; }),
       heats = heat.group(function(d) { return Math.floor(d / 10) * 10; }),
-
+     
       scoreAvg = pois.dimension(function(d) { return d.shop_scores[3].score; }),
       scoreAvgs = scoreAvg.group(),
 
@@ -121,8 +120,8 @@ d3.csv("data/task_data1.csv", function(error, poisArray) {
 	        .dimension(spend)
 	        .group(spends)
 	      .x(d3.scale.linear()
-	        .domain([0, 600])
-	        .rangeRound([0, 250])
+	        .domain([0, 500])
+	        .rangeRound([0, charWidth])
 	        ),
 
 	    barChart()
@@ -130,40 +129,40 @@ d3.csv("data/task_data1.csv", function(error, poisArray) {
 	        .group(heats)
 	      .x(d3.scale.linear()
 	        .domain([0, d3.max([2000])])
-	        .rangeRound([0, 250])),
+	        .rangeRound([0, charWidth])),
 
 	    barChart()
 	        .dimension(scoreAvg)
 	        .group(scoreAvgs)
 	      .x(d3.scale.linear()
-	        .domain([5, 10])
-	        .rangeRound([0, 200])),
+	        .domain([6, 10])
+	        .rangeRound([0, charWidth])),
 
 	    barChart()
 	        .dimension(scoreTaste)
 	        .group(scoreTastes)
 	      .x(d3.scale.linear()
-	        .domain([5, 10])
-	        .rangeRound([0, 200])),
+	        .domain([6, 10])
+	        .rangeRound([0, charWidth])),
 
 	    barChart()
 	        .dimension(scoreEnv)
 	        .group(scoreEnvs)
 	      .x(d3.scale.linear()
-	        .domain([5, 10])
-	        .rangeRound([0, 200])),
+	        .domain([6, 10])
+	        .rangeRound([0, charWidth])),
 
 	    barChart()
 	        .dimension(scoreServ)
 	        .group(scoreServs)
 	      .x(d3.scale.linear()
-	        .domain([5, 10])
-	        .rangeRound([0, 200])),
+	        .domain([6, 10])
+	        .rangeRound([0, charWidth])),
   ];
 
   // Given our array of charts, which we assume are in the same order as the
   // .chart elements in the DOM, bind the charts to the DOM and render them.
-  // We also listen to the chart's brush events to update the display.
+  // We also listen to the chart's brush events to update the display. todo 该事件触发还有其他模块会响应
   var chart = d3.selectAll(".chart")
       .data(charts)
       .each(function(chart) { chart.on("brush", renderAll).on("brushend", renderAll); });
@@ -172,7 +171,11 @@ d3.csv("data/task_data1.csv", function(error, poisArray) {
   d3.selectAll("#total").text(pois.size());
 
 
-  renderAll();
+  
+   	
+   	renderAll()
+
+
 
   // Renders the specified chart or list.
   function render(method) {
@@ -181,31 +184,21 @@ d3.csv("data/task_data1.csv", function(error, poisArray) {
 
   // Whenever the brush moves, re-rendering everything.
   function renderAll() {
-  	//todo 可以改成发送事件 其他的模块监听该事件做出相应改变
+  	
     chart.each(render);
     d3.select("#active").text(all.value());
 
-    drawPois(scoreAvg.top(Infinity))
-    // console.log(scoreAvg.top(Infinity))
+    //todo 可以改成发送事件 返回选中的数据 其他的模块监听该事件做出相应改变
+    filterChange.publish(scoreAvg.top(Infinity))
+    // drawPois(scoreAvg.top(Infinity))
   }
-
-  window.filter = function(filters) {
-    filters.forEach(function(d, i) { charts[i].filter(d); });
-    renderAll();
-  };
-
-  window.reset = function(i) {
-    charts[i].filter(null);
-    renderAll();
-  };
-
- 
+  
   function barChart() {
 	    if (!barChart.id) barChart.id = 0;
 
 	    var margin = {top: 10, right: 10, bottom: 20, left: 10},
 	        x,
-	        y = d3.scale.linear().range([100, 0]),
+	        y = d3.scale.linear().range([chartHeight, 0]),
 	        id = barChart.id++,
 	        axis = d3.svg.axis().orient("bottom"),
 	        brush = d3.svg.brush(),
@@ -223,6 +216,7 @@ d3.csv("data/task_data1.csv", function(error, poisArray) {
 	      div.each(function() {
 	        var div = d3.select(this),
 	            g = div.select("g");
+            
 
 	        // Create the skeletal chart.
 	        if (g.empty()) {
@@ -248,7 +242,7 @@ d3.csv("data/task_data1.csv", function(error, poisArray) {
 	              .data(["background", "foreground"])
 	            .enter().append("path")
 	              .attr("class", function(d) { return d + " bar"; })
-	              .datum(group.all());
+	              // .datum(group.all());
 
 	          g.selectAll(".foreground.bar")
 	              .attr("clip-path", "url(#clip-" + id + ")");
@@ -263,7 +257,8 @@ d3.csv("data/task_data1.csv", function(error, poisArray) {
 	          gBrush.selectAll("rect").attr("height", height);
 	          gBrush.selectAll(".resize").append("path").attr("d", resizePath);
 	        }
-
+            
+            g.selectAll("path").datum(group.all())
 	        // Only redraw the brush if set externally.
 	        if (brushDirty) {
 	          brushDirty = false;
@@ -392,9 +387,23 @@ d3.csv("data/task_data1.csv", function(error, poisArray) {
 	    return d3.rebind(chart, brush, "on");
   }
 
-});
+  window.filter = function(filters) {
+    filters.forEach(function(d, i) { charts[i].filter(d); });
+    renderAll();
+  };
+
+  window.reset = function(i) {
+    charts[i].filter(null);
+    renderAll();
+  };
+
+   for(let i in charts){
+   		window.reset(i);
+   	}
+}
 
 
+ 
 //按属性重排功能 sort by
 // <span class="button-dropdown" data-buttons="dropdown">
 //     <button class="button button-rounded">

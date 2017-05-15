@@ -8,6 +8,7 @@ body{
 	background-color:whitesmoke;
 }
 
+/*------------header--------------*/
 header{
 	height: 20px;
 	width: 100%;
@@ -20,7 +21,7 @@ header{
 	font-size: 1.2em;
 	opacity: 0.8;
 }
-#filter{
+#query{
 	margin-top: -10px;
 	float: right;
 }
@@ -30,7 +31,7 @@ header{
 	margin-right: 2%;
 }
 
-
+/*------------main--------------*/
 #main{
 	width: 90%; /*可以使用变量吗？要和窗口大小一致。或在js里控制可以吗*/
 	/*min-width:990px;*/
@@ -43,7 +44,9 @@ header{
 	/*background-color: rgb(236,235,253);*/
 }
 
-
+#main svg:active{
+	cursor: move;
+}
 
 #vis,#no-wordle,#origin{
 	position: absolute;
@@ -95,9 +98,7 @@ fieldset{
 	cursor: pointer;
 }
 
-#main svg:active{
-	cursor: move;
-}
+
 
 .text text:hover{
 	cursor: pointer;

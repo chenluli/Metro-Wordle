@@ -1,0 +1,266 @@
+body{
+	position: relative;
+	width:100%;
+	height:100%;
+	/*overflow-y: hidden;*/
+	/*尽量实现响应式*/
+    /*background-color: #eeeeee;*/
+	background-color:whitesmoke;
+}
+
+/*------------header--------------*/
+header{
+	height: 20px;
+	width: 100%;
+	background-color: #0099FF;
+	margin-top: -10px;
+	margin-bottom: 10px;
+	margin-left:-10px;
+	padding:10px;
+	color: white;
+	font-size: 1.2em;
+	opacity: 0.8;
+}
+#query{
+	margin-top: -10px;
+	float: right;
+}
+
+#search{
+	float:right;
+	margin-right: 2%;
+}
+
+#selection{
+	background-color: #0099FF;
+	opacity: 0.8;
+	top: 35px;
+	text-align: center;
+}
+
+#selection li{
+	font-size: 0.8em;
+	list-style: none;
+	line-height: 1.8em;
+	/*border-bottom: dashed 1px white;*/
+
+}
+
+/*------------main--------------*/
+#main{
+	width: 90%; /*可以使用变量吗？要和窗口大小一致。或在js里控制可以吗*/
+	/*min-width:990px;*/
+	height: 660px;
+	position: absolute;
+	left: 50%;
+	margin-left: -40%;
+	margin-top: 45px;
+	/*border: #47655b solid 1px ;*/
+	/*background-color: rgb(236,235,253);*/
+}
+
+#main svg:active{
+	cursor: move;
+}
+
+#wordle,#origin{
+	position: absolute;
+}
+
+#origin{
+	display: none;
+}
+
+#wordle{
+	display: block;
+}
+
+#legend{
+	position: absolute;
+	height: 250px;
+	width: 50px;
+}
+
+.stations circle:hover,.text text:hover{
+	cursor: pointer;
+}
+.text .unactive{
+	opacity: 0.2;
+}
+/*-------sideBar----------------------*/
+#sideBar{
+	position: absolute;
+	right: 0;
+	top:40px;
+	border-left: double steelblue 1px; 
+	min-width: 300px;
+	padding: 10px;
+}
+
+/*-----categry------*/
+#categry{
+	height: 80px;
+
+}
+#categry span{
+   margin-left: 10px;
+   font-size: 12px;
+   padding: 2px;
+   display: inline-block;
+   height: 20px;
+   line-height: 18px;
+}
+
+#categry button{
+	display: inline;
+	width: 15px;
+	height: 15px;
+	border-width: 1px;
+	font-size: 10px;
+	line-height: 10px;
+}
+#categry .selected{
+	background-color: steelblue;
+}
+/*-----regionIcon------*/
+#regionIc{
+	height: 130px;
+}
+ 
+/*----detail------*/
+#details{
+    position: fixed;
+	right: 0;
+	background-color: gainsboro;
+	height: 100%;
+	display: none;
+	bottom: 10px;
+	font-size: 1.2em;
+}
+
+#details i{
+	float: right;
+	cursor: pointer;
+	margin-right: 10px;
+}
+
+/*---barchart-----*/
+#charts {
+  padding: 10px 0;
+}
+
+/*宽高应动态调整*/
+.chart {
+  display: inline-block;
+  margin-bottom: 20px; 
+}
+
+.reset {
+  padding-left: 1em;
+  font-size: smaller;
+  color: #ccc;
+}
+
+.background.bar {
+  fill: #ccc;
+}
+
+.foreground.bar {
+  fill: steelblue;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.brush rect.extent {
+  fill: steelblue;
+  fill-opacity: .125;
+}
+
+.brush .resize path {
+  fill: #eee;
+  stroke: #666;
+}
+
+
+aside {
+  position: absolute;
+  font-size: smaller;
+  width: 220px;
+}
+
+
+/*-------others--------*/
+
+#tooltip{
+    position: absolute;
+    width: 200px;
+    height:100px;
+    background-color: #363636;
+	color:white;
+	opacity: 0.8;
+    visibility: hidden;
+}
+
+
+
+/*--------menu-------------*/
+li:hover{
+	background-color: white;
+	color: blue;
+	cursor:pointer;
+}
+
+#menu ul{
+	/*display: inline;*/
+    position: fixed;
+    width: 10px;
+    height: 100%;
+	left: -10px;
+	margin-top: -10px;
+	color:white;
+	background-color: #00aaff;
+	list-style: none;
+	opacity: 0.8;
+}
+
+#menu li{
+	position: absolute;
+	left: -42px;
+   width: 150px;
+	text-align: center;
+	line-height: 3em;
+}
+
+#menu li:first-child{
+	transform: rotate(90deg) translate(100px, 0px);
+}
+#menu li:nth-child(2){
+	transform: rotate(90deg) translate(250px, 0px);
+}
+#menu li:nth-child(3){
+	transform: rotate(90deg) translate(400px, 0px);
+
+}
+#menu li:nth-child(4){
+	transform: rotate(90deg) translate(550px, 0px);
+
+}
+#menu .selected{
+	background-color: whitesmoke;
+	color: blue;
+}
+
+/*-----footer--------*/
+
+footer {
+  padding: 2em 0 1em 0;
+  font-size: 12px;
+}
