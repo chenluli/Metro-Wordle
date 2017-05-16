@@ -50,6 +50,7 @@ var createMetroWordle=function(data){
         fillWordle(region,regionid);
         // break;
     }
+    wordleComplete.publish();
 }
 
 //todo 注册成regions的函数 region的boundary为属性shape
@@ -67,7 +68,7 @@ function fillWordle(region,regionid){
     var count=0;
     var wordToPut=[];
     option.baseSize=(region.heat<100)?option.baseSize:24;
-    var maxHeat=(region.heat<100)?1:3;
+    var maxHeat=(region.heat<100)?0.6:0.8;
     for(let wordDic of innerS){
         if(wordDic==="space" || count/region.space > maxHeat) break;
         count+=((wordDic.weight*option.baseSize*wordDic.word.length)*(wordDic.weight*option.baseSize));

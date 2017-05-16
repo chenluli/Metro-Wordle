@@ -47,3 +47,4 @@ var dataLoader = new Publisher;
 var queryClick= new Publisher;
 var filterChange= new Publisher;
 var ctgClick=new Publisher;
+var wordleComplete=new Publisher;

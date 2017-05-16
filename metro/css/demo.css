@@ -87,6 +87,69 @@ header{
 .text .unactive{
 	opacity: 0.2;
 }
+
+/*------------loading----------------*/
+#loading{
+	position: absolute;
+	text-align: center;
+	color:#009999;
+	font-size: 5em;
+}
+.k-ring-2 {
+	position:relative;
+	width:100px;
+	height:100px;
+	margin:30px auto;
+	border:4px solid #000;
+	border-radius:100%;
+	animation:k-loadingD 1.5s .3s cubic-bezier(.17,.37,.43,.67) infinite;
+}
+.k-ball-holder {
+	position:absolute;
+	width:12px;
+	height:100px;
+	left:17px;
+	top:0
+}
+.k-ball1a {
+	position:absolute;
+	top:-10px;
+	left:-1px;
+	width:20px;
+	height:20px;
+	border-radius:100%;
+	background:#CCC;
+}
+.k-ball2a {
+	position:absolute;
+	bottom:-10px;
+	left:-1px;
+	width:20px;
+	height:20px;
+	border-radius:100%;
+	background:#ccc
+}
+.k-ball3a {
+	position:absolute;
+	bottom:25px;
+	left:80px;
+	width:20px;
+	height:20px;
+	border-radius:100%;
+	background:#ccc
+}
+@keyframes k-loadingD {
+	0 {
+	transform:rotate(0deg)
+	}
+	50% {
+		transform:rotate(180deg)
+	}
+	100% {
+		transform:rotate(360deg)
+	}
+}
+
 /*-------sideBar----------------------*/
 #sideBar{
 	position: absolute;

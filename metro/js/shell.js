@@ -9,7 +9,8 @@ var linecolor=["#E4002B","#97D700","#FFD100","#5F259F","#AC4FC6","#D71671","#FF6
 var svgs=d3.selectAll("#main svg");
 
 var legendVis=d3.select('#legend');
-
+var loading=document.querySelector("#loading");
+console.log(loading);
 
 //todo svg主画布改成可伸缩的 实际大小可以很大，显示在页面上的为一个固定大小的窗口?->注意这样易导致文字重叠
 (function initialLayout() {
@@ -27,6 +28,7 @@ var legendVis=d3.select('#legend');
     }
     
     $("#sideBar").width($("#main").width()*0.3).height($("#main").height())
+    $(loading).width($("#main").width()*0.7).height($("#main").height());
     
     //添加线路图标
     let legend=function(svg){
@@ -110,10 +112,7 @@ $("#query").click(function (e) {
     }
 });
 
-//todo 增加等待图标指示
-function waitLoad(){
 
-}
 //TODO  如果单词所属词云不同则应增加碰撞检测中相隔的最小间距
 //TODO 单词在画布缩放后有重叠 （其画布缩放时字体大小也要自动计算(basefont)？？
 
@@ -141,11 +140,19 @@ var onOriData = function(data){
 }
 onOriData.subscribe(originData);
 
+//监听tag被点击事件
+var onctgClick=function(ctg){
+    drawPois(ctg.values);
+    updateWordState(ctg.values);
+    filterInit(ctg.values);
+}
+onctgClick.subscribe(ctgClick);
+
 var onData = function(data){
     createFilter(data);
     drawPois(data.poisArray);
     createMetroWordle(data);
-    console.log(data.regions);
+    // console.log(data.regions);
     updateWordState(data.poisArray);
 }
 onData.subscribe(dataLoader);
@@ -157,10 +164,8 @@ var onFilter=function(data){
 }
 onFilter.subscribe(filterChange)
 
-//监听tag被点击事件
-var onctgClick=function(ctg){
-    drawPois(ctg.values);
-    updateWordState(ctg.values);
-    filterInit(ctg.values);
+var onWordle=function(){
+    loading.style.display="none";
+    console.log("wordle complete")
 }
-onctgClick.subscribe(ctgClick)
+onWordle.subscribe(wordleComplete);

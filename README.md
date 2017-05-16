@@ -1,7 +1,7 @@
 # Metro-Wordle
 
 Metro Layout and Wordle Embedding   
-[点此访问demo](https://chenluli.github.io/Metro-Wordle/metro/)
+[点此访问demo](https://chenluli.github.io/Metro-Wordle/metro/demo.html)
 
 ----
 ### 简介
@@ -27,7 +27,7 @@ Metro Layout and Wordle Embedding
 示例效果如下：   
     
    ![DEMO](metro/imgs/wordleEmbeding.png "DEMO")
-（生成速度较慢，故没有展示于网页上，相关代码文件为wordleFilling.js）
+（生成速度较慢，效率尚未优化，需等待）
 
 
 ### 算法
