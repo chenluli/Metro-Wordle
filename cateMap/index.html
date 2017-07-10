@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>SH-Metro Demo</title> 
+    <link rel="stylesheet" type="text/css" href="css/buttons.css">
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="css/demo.css">
+</head>
+<style>
+/*
+@import url(http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz:400,700);*/
+</style>
+<body>
+  <div id="menu">
+     <ul>
+       <li>Origin</li>
+       <li  class="selected">Metro-Wordle</li>
+     </ul>
+  </div>
+
+
+  <div id="main">
+    <div id="svgControl"></div>
+
+    <svg id="origin"></svg>
+    <svg id="wordle"></svg>
+    <!-- <div id="mainVis"></div> -->
+  
+    <svg id="legend"></svg>
+    <div id="loading">
+      <div class="k-ring-2" >
+        <div class="k-ball-holder">
+          <div class="k-ball1a" ></div>
+          <div class="k-ball2a" ></div>
+          <div class="k-ball3a" ></div>
+        </div>
+      </div>
+      <p>Loading...</p>
+    </div>
+  </div>
+   <div id="sideBar">
+    
+    <!-- <div id="regionIc"><span>区域</span></div> -->
+    <div id="categry"><span>分类</span></div>
+    <div id="charts">
+      <div id="spend-chart" class="chart">
+        <div class="title">人均消费(Spend)</div>
+      </div>
+      <div id="heat-chart" class="chart">
+        <div class="title">热度(Comment_Num)</div>
+      </div>
+      <div id="score1-chart" class="chart">
+        <div class="title">均分(Average_Score)</div>
+      </div>
+      <div id="taste" class="chart">
+        <div class="title">口味(Taste_score)</div>
+      </div>
+      <div id="env" class="chart">
+        <div class="title">环境(Environment_score)</div>
+      </div>
+      <div id="serv" class="chart">
+        <div class="title">服务(Service_score)</div>
+      </div>
+    </div>
+    <aside id="totals"><span id="active">-</span> of <span id="total">-</span> elems selected.</aside>
+    <div id="details">
+      <span>详情</span>
+      <i class="fa fa-close" aria-hidden="true"></i>
+    </div>
+  </div>
+   <div id="tooltip"></div>
+
+
+   <header>
+     <span >Shanghai Metro</span>
+
+     <span id="search">
+       <i class="fa fa-search" aria-hidden="true"></i>
+       <input type="text" name="search" placeholder="搜索地铁站">
+       <!--<button class="button button-primary" >搜索站点<i class="fa fa-caret-down"></i></button>-->
+       <ul class="button-dropdown-list" name="stations" id="stations"></ul>
+       </span>
+     <div class="button-dropdown" data-buttons="dropdown" id="query">
+       <button class="button button-primary" >综合<i class="fa fa-caret-down"></i></button>
+       <ul class="button-dropdown-list" name="selection" id="selection">
+         <li>美食</li>
+         <li>景点</li>
+         <li>酒店</li>
+       </ul>
+     </div>
+   </header>
+
+   <footer>
+   </footer>
+
+
+<script src="js/underscore-min.js"></script>
+<script src="js/crossfilter.v1.min.js"></script>
+<script src="js/jquery-1.8.3.min.js"></script>
+<script src="js/transformcoord.js"></script> 
+<script src="js/d3.min.js"></script>
+<script src="js/d3.tip.js"></script>
+<script src="js/pubsub.js"></script>
+
+<script src="js/constraintCloud.js"></script>
+<script src="js/dataModel.js"></script>
+<script src="js/mainVis.js"></script> 
+<script src="js/filter.js"></script>
+<script src="js/shell.js"></script>
+</body>
+</html>
