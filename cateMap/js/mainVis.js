@@ -479,7 +479,7 @@ function poiHandler(keywords,poisArray){
             document.querySelector("#wordle .text").style.opacity=0.3;
             console.log(e.target,keywords);
 
-            $("#wordle").append(e.target) ;//todo 放入单独一个g中，每次只高亮一个
+            $("#wordle").append($(e.target).clone(true)) ;//todo 放入单独一个g中，每次只高亮一个
             let data=e.target.__data__;
             let pois=[];
             for(let idx of data.idx){
@@ -524,9 +524,11 @@ function poiHandler(keywords,poisArray){
                     detailInfo(poi);
                 })
         }
-        else{
+
+        else if(e.target.nodeName!=="circle"){
           document.querySelector("#wordle .text").style.opacity=1; 
-          $("#wordle .pois").html(" ");
+          $("#wordle .pois").remove();
+          $("#wordle>text").remove()
         }
         
         
