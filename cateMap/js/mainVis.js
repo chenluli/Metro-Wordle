@@ -492,7 +492,7 @@ function poiHandler(keywords,poisArray){
             //todo 绘制的点应先进行judgeregion和distort
             // distortMap(poi,regionsJson);
             //console.log(pois);
-            let circles=d3.select("#wordle").append('g').selectAll("circle").data(pois); //todo 后续更改：不能点击一次就加一个g，只增加一次
+            let circles=d3.select("#wordle").append('g').attr("class","pois").selectAll("circle").data(pois); //todo 后续更改：不能点击一次就加一个g，只增加一次
             
             circles.exit().remove() ; //.attr()
             circles.enter().append('circle')
@@ -524,7 +524,10 @@ function poiHandler(keywords,poisArray){
                     detailInfo(poi);
                 })
         }
-        
+        else{
+          document.querySelector("#wordle .text").style.opacity=1; 
+          $("#wordle .pois").html(" ");
+        }
         
         
    })
