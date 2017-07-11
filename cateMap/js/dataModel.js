@@ -34,7 +34,7 @@ var colorPannel={
     "酒吧":"#CC00CC",
     "工作餐":"#99CC66",
 }
-
+var data={};
 //add color legend
 var $colorPannel=$("#categry"); //todo 之后用一个对象缓存所有选择器
 (function colorLengendInit(ctgries){
@@ -100,7 +100,7 @@ d3.json(file.originP,function (e,originP){
 				d3.csv(file.pois,function(e,poisArray){
 
 				//数据预处理
-				var data={};
+
 
 	            [data.paths,data.stations]=processMetroData(dataP,dataS,regionsJson);
 	            data.poisArray=poiDataProc(poisArray,ostations,regionsJson,originS);
@@ -122,12 +122,12 @@ d3.json(file.originP,function (e,originP){
 
                             judgeRegion(d,ostations,regionsJson,originS);
                             distortMap(d,regionsJson)
-                            console.log(d)
-                        }
-                        
-                        
+                          //  console.log(d)
+                        }  
                     }
-                    poiHandler(keywords);
+
+                    console.log("pois",poisArray)
+                    poiHandler(keywords,poisArray);
 
                     d3.json(file.clustered,function(e,clustered){
                         var points=[];
@@ -158,7 +158,7 @@ d3.json(file.originP,function (e,originP){
                         }
                         regionProc(regionsJson,dataS,400);
                         data.regions=regionsJson;
-                        drawKeyword(points);
+                        //drawKeyword(points);
 
                         //处理完毕发送消息
                         dataLoader.publish(data)
@@ -359,11 +359,11 @@ function poiDataProc(poisArray,ostations,regionsJson,originS){
 	  	d.shop_scores.forEach(function(elem){
 	  		elem.score=parseFloat(elem.score);
 	  		mean+=elem.score/3;
-	  	})
+	  	});
 	  	d.shop_scores.push({
 	  		"score": parseFloat(mean.toFixed(1)),
 	  		"score_title":"mean"
-	  	})
+	  	});
 
 	  	if(d.shop_comment_num<100){
 	  		d.weight=0.3; //最小字号：12；

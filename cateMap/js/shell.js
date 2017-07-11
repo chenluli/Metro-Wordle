@@ -142,7 +142,7 @@ onOriData.subscribe(originData);
 
 //监听tag被点击事件
 var onctgClick=function(ctg){
-   // drawPois(ctg.values);
+    drawPois(ctg.values);
     updateWordState(ctg.values);
     filterInit(ctg.values);
 }
@@ -150,7 +150,7 @@ onctgClick.subscribe(ctgClick);
 
 var onData = function(data){
     createFilter(data);
-    //drawPois(data.poisArray);
+    drawPois(data.poisArray);
     
     console.log(data)
     createMetroWordle(data);
@@ -161,7 +161,7 @@ onData.subscribe(dataLoader);
 
 //监听范围被选择事件
 var onFilter=function(data){
-    //drawPois(data);
+    drawPois(data);
     updateWordState(data);
 }
 onFilter.subscribe(filterChange)

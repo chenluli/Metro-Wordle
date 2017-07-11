@@ -11,7 +11,6 @@ var option={
 
 //属性数据判断 underscore库可用
 //单词高亮 通过增减class
-
 //todo mainVis会改变 可能是origin也可能是wordle
 var originVis=d3.select("#origin");
 var wordleVis=d3.select("#wordle");
@@ -20,7 +19,7 @@ var keyWordVisg=originVis.append("g").attr("class","keyword");
 var wordsG=wordleVis.append("g").attr("class","text").attr("transform", "translate(" + PADDING+","+PADDING + ")") ;
 var wordCircleTip=d3.tip().attr("class", "d3-tip");
 var poiTip=d3.tip().attr("class", "d3-tip");
-keyWordVisg.call(wordCircleTip);
+poiVisg.call(wordCircleTip);
 wordleVis.call(poiTip);
 
 function drawPois(data){
@@ -41,7 +40,17 @@ function drawPois(data){
         .attr("cy",function(d,i){return d["y"]})
         .attr("r",5)
         .attr('class',function(d){return 'shop'+d.shop_id})
-        .attr("fill","rgba(0,0,230,0.5)")   
+        .attr("fill","rgba(0,0,230,0.5)")
+        .on("mouseover",function(d){
+            //使用d3.tip
+            wordCircleTip.html(function() {
+                return d.shop_name;
+            });
+            wordCircleTip.show();
+        })
+        .on("mouseout",function(){
+            wordCircleTip.hide();
+        })   
 }
 
 //画出推荐菜的聚类结果
@@ -84,7 +93,7 @@ function drawKeyword(data){
             }
 
             drawPois(points);
-        })
+        });
 
     //点击clustered keyword触发事件：所有与之关联的地点位置出现并高亮
 }
@@ -100,63 +109,106 @@ var createMetroWordle=function(data){
     for(let regionid in data.regions){
         let region=data.regions[regionid];
 
+       while(region.innerS.length<400){
+           region.innerS=region.innerS.concat(region.innerS);
+       }
+       //fillWordle(region,regionid,cachedata);
 
-        fillWordle(region,regionid,cachedata);
+       d3.json("data/cachedata.json",function (error,cachedata) {
+           //console.log(cachedata);
+           fillWordle(region,regionid,cachedata,true);
 
-       // break;
+       });
+
+       break;
     }
 
-    console.log(cachedata)
-    createAndDownloadFile("cachedata.json",JSON.stringify(cachedata));
+    //console.log(cachedata);
+    //createAndDownloadFile("cachedata.json",JSON.stringify(cachedata));
     wordleComplete.publish();
 
-}
+};
 
 //todo 注册成regions的函数 region的boundary为属性shape
-function fillWordle(region,regionid,cachedata){
-    console.log(region)
-    let edges=region['edges'];
-    let boundaryR=400;
-    option.boundary=region.boundary;
+function fillWordle(region,regionid,cachedata,isCached=false){
+    if(isCached){
+        for(let cache of cachedata){
+            for(let word of cache){
+               // console.log(word)
+                let theText = wordsG.append("text");
 
-    //todo exist应该是每个region的属性/全局变量,应缓存布局过的
-    let innerS=region['innerS']
+                word.data.position=word.position;
+                theText.attr("pointer-events", "all")
+                    .attr("transform", "translate(" + word.position + ")") //textBox相对svg的位置
+                    .attr("x", 0)
+                    .attr("y", word.height)
+                    .style("font-size", word.fontSize+"px")
+                    .style("font-family",word.fontStyle)
+                    .style("font-weight","bold")
+                    .attr("fill", word.color)
+                    .attr('class',word.classname)
+                    .datum(word.data)
+                    .text(word.text);
 
-    // option['boundary'] .draw(textG);
-    
-
-    //todo 改变一下算法：1.计算多少词多大字号（结合weight和region面积）合适，据此挑选要布局词 2.是否可以先在一个大的范围上布局再缩小
-    var count=0;
-    var wordToPut=[];
-    option.baseSize=(region.heat<100)?option.baseSize:30;
-    var maxHeat=(region.heat<100)?2:3;
-    for(let wordDic of innerS){
-        if(wordDic==="space" || count/region.space > maxHeat) break;
-        count+=((wordDic.weight*option.baseSize*wordDic.word.length)*(wordDic.weight*option.baseSize));
-        // if(!wordDic.uid) wordDic.color='#9'+'03'[Math.floor(Math.random()*2)]+'CF'[Math.floor(Math.random()*2)];
-        wordDic.rotate=Math.floor(Math.random()*2)*Math.PI/2;
-        wordToPut.push(wordDic);
+                word['box']=theText[0][0].getBBox();
+                word['box'].x+=word.position[0];
+                word['box'].y+=word.position[1];
+            }
+        }
+        
     }
-    
-    wordToPut=wordToPut.filter(function(d){
-        return d.word!==""&&d.word!=="非活动评论"&&d.word!=="其他"&& d.weight!==0;
-    })
-    // for(let word of wordToPut) console.log(word)
-    // console.log(regionid,count/region.space)
-    
-    // console.log(option.rotate)
-    let wordledata=wordle(wordToPut,option,wordsG,"region"+regionid);
-    //todo 将所有wordledata存下来 之后直接加载 不重新计算布局了
-    cachedata.push(wordledata)
-    // for(let word of wordToPut){ //todo 为每个单词确定不同的布局起点
-    //     //option.rotate=Math.floor(Math.random()*2)*Math.PI/2;
-    //     //if(!word.uid) option.color=
-    //     console.log(word)
-    //     option['boundary'] = boundGenerator(regionF(edges, [region.x,region.y], boundaryR), 2*boundaryR, [region.x,region.y]); //todo 注意boundary是与R有关的
-    //     wordle([word],option,wordsG,"region"+regionid);
-    // }
-    // 类别和tag的词还有问题，属性
-    option.baseSize=40;
+    else {
+        console.log(region);
+        let edges = region['edges'];
+        let boundaryR = 400;
+        option.boundary = region.boundary;
+
+        //todo exist应该是每个region的属性/全局变量,应缓存布局过的
+        let innerS = region['innerS'];
+
+        // option['boundary'] .draw(textG);
+
+
+        //todo 改变一下算法：1.计算多少词多大字号（结合weight和region面积）合适，据此挑选要布局词 2.是否可以先在一个大的范围上布局再缩小
+        var count = 0;
+        var wordToPut = [];
+        option.baseSize = (region.heat < 100) ? option.baseSize : 30;
+        var maxHeat = (region.heat < 100) ? 2 : 3;
+        for (let wordDic of innerS) {
+            if (wordDic === "space" || count / region.space > maxHeat) break;
+            count += ((wordDic.weight * option.baseSize * wordDic.word.length) * (wordDic.weight * option.baseSize));
+            // if(!wordDic.uid) wordDic.color='#9'+'03'[Math.floor(Math.random()*2)]+'CF'[Math.floor(Math.random()*2)];
+            wordDic.rotate = Math.floor(Math.random() * 2) * Math.PI / 2;
+            wordToPut.push(wordDic);
+        }
+
+        wordToPut = wordToPut.filter(function (d) {
+            return d.word !== "" && d.word !== "非活动评论" && d.word !== "其他" && d.weight !== 0;
+        });
+        // for(let word of wordToPut) console.log(word)
+        // console.log(regionid,count/region.space)
+
+        // console.log(option.rotate)
+        let wordledata = wordle(wordToPut, option, wordsG, "region" + regionid);
+        //todo 将所有wordledata存下来 之后直接加载 不重新计算布局了
+        
+        for(let word of wordledata){
+            delete word.treeArray
+            delete word.tree
+            delete word.leafArray
+        }
+        cachedata.push(wordledata);
+
+        // for(let word of wordToPut){ //todo 为每个单词确定不同的布局起点
+        //     //option.rotate=Math.floor(Math.random()*2)*Math.PI/2;
+        //     //if(!word.uid) option.color=
+        //     console.log(word)
+        //     option['boundary'] = boundGenerator(regionF(edges, [region.x,region.y], boundaryR), 2*boundaryR, [region.x,region.y]); //todo 注意boundary是与R有关的
+        //     wordle([word],option,wordsG,"region"+regionid);
+        // }
+        // 类别和tag的词还有问题，属性
+        option.baseSize = 40;
+    }
 }
 
 function zoomHandler(svg) {
@@ -168,7 +220,7 @@ function zoomHandler(svg) {
     let isMouseDown,mousePos_x,mousePos_y,curPos_x,curPos_y;
 
     let viewBox_x=svg.attr('viewBox').split(' ')[0],viewBox_y=svg.attr('viewBox').split(' ')[1],width=svg.attr('viewBox').split(' ')[2],height=svg.attr('viewBox').split(' ')[3];
-    console.log(width,height)
+    console.log(width,height);
     let oldScale=1;
 
     svg.on("mousedown", function () {
@@ -218,6 +270,8 @@ function createAndDownloadFile(fileName, content) {
         aTag.href = URL.createObjectURL(blob);
         aTag.click();
         URL.revokeObjectURL(blob);
+    console.log(fileName)
+
 }
 
 function createMetroMap(svg,paths,stations) {
@@ -417,40 +471,60 @@ function updateWordState(data){
 }
 
 
-function poiHandler(keywords){
+function poiHandler(keywords,poisArray){
+    console.log(poisArray)
     document.querySelector("#wordle").addEventListener('click',function(e){
-        //隐藏其他词 高亮（复制一遍）所选中的词
-        document.querySelector("#wordle .text").style.opacity=0.3;
-        console.log(e.target,keywords);
+        if(e.target.nodeName==="text"){
+            //隐藏其他词 高亮（复制一遍）所选中的词
+            document.querySelector("#wordle .text").style.opacity=0.3;
+            console.log(e.target,keywords);
 
-        $("#wordle").append(e.target) //todo 放入单独一个g中，每次只高亮一个
-        let data=e.target.__data__;
-        let pois=[];
-        for(let idx of data.idx){
-            pois.push(keywords[data.word][idx]);
+            $("#wordle").append(e.target) ;//todo 放入单独一个g中，每次只高亮一个
+            let data=e.target.__data__;
+            let pois=[];
+            for(let idx of data.idx){
+                pois.push(keywords[data.word][idx]);
+            }
+
+            //drawPois(pois);
+            //显示与其相关的餐馆的点
+            //为这些点也监听事件 --显示详情 todo 放到一个函数中
+            //todo 绘制的点应先进行judgeregion和distort
+            // distortMap(poi,regionsJson);
+            //console.log(pois);
+            let circles=d3.select("#wordle").append('g').selectAll("circle").data(pois); //todo 后续更改：不能点击一次就加一个g，只增加一次
+            
+            circles.exit().remove() ; //.attr()
+            circles.enter().append('circle')
+                .attr("cx",function(d,i){return data.position[0]+100-Math.random()*200})
+                .attr("cy",function(d,i){return data.position[1]+100-Math.random()*200})
+                .attr("r",8)
+                .attr('class',function(d){return 'shop'+d.poiUid})
+                .attr("fill","rgba(0,0,230,0.5)")
+                .on('mouseover',function(d){
+                    console.log("mouseover",d);
+                    poiTip.html(function () {
+                        console.log(d); //todo 需要poidata
+                        var poi=poisArray.find(function(p){
+                            return p.shop_id===d.poiUid;
+                        });
+                        return poi.shop_name;
+                    });
+                    poiTip.show();
+
+                }) 
+                .on('mouseout',function(d) {
+                    poiTip.hide();
+                })
+                .on("click",function (d) {  //todo 改成向detail模块发个消息
+                    var poi=poisArray.find(function(p){
+                        return p.shop_id===d.poiUid;
+                    });
+                    console.log("click",poi);
+                    detailInfo(poi);
+                })
         }
-
-        //drawPois(pois);
-        //显示与其相关的餐馆的点
-        //为这些点也监听事件 --显示详情 todo 放到一个函数中
-        //todo 绘制的点应先进行judgeregion和distort
-        // distortMap(poi,regionsJson);
-        console.log(pois)
-        let circles=d3.select("#wordle").append('g').selectAll("circle").data(pois); //todo 后续更改：不能点击一次就加一个g，只增加一次
         
-        circles.exit().remove()  //.attr()
-        circles.enter().append('circle')
-            .attr("cx",function(d,i){return d["afterX"]})
-            .attr("cy",function(d,i){return d["afterY"]})
-            .attr("r",5)
-            .attr('class',function(d){return 'shop'+d.shop_id})
-            .attr("fill","rgba(0,0,230,0.5)")
-            .on('mouseover',function(d){
-
-            }) 
-            .on('mouseout',function(d) {
-                // body...
-            })
         
         
    })

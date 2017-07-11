@@ -199,19 +199,32 @@ header{
  
 /*----detail------*/
 #details{
-    position: fixed;
+    position: absolute;
+    /*position: relative;*/
+    top:20px;
+    padding: 10px;
 	right: 0;
-	background-color: gainsboro;
+	/*background-color: gainsboro;*/
+	background-color: rgba(0,0,0,0.6);
+	color: white;
+
+	border-radius: 2px;
+
 	height: 100%;
 	display: none;
 	bottom: 10px;
-	font-size: 1.2em;
+	font-size: 1em;
+	line-height: 1.2em;
 }
 
 #details i{
 	float: right;
 	cursor: pointer;
 	margin-right: 10px;
+}
+
+#details span{
+	font-size: 1.3em;
 }
 
 /*---barchart-----*/

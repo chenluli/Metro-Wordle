@@ -186,7 +186,7 @@
             }
             else{
                 exist.push(word);
-                drawOneWord(word,classname);
+                drawOneWord(word,textGroup);
             }
         }
 
@@ -369,7 +369,7 @@
             }
         }
 
-        function drawOneWord(word,station,sprite=false) {
+        function drawOneWord(word,textGroup,sprite=false) {
             let theText = textGroup.append("text");
             
             theText.attr("pointer-events", "all")
